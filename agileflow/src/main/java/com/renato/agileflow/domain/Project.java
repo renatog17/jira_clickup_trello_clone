@@ -23,6 +23,7 @@ public class Project {
 	private LocalDate startDate;
 	private LocalDate endDate;
 	private LocalDateTime createdAt;
+	private boolean excluded;
 
 	public Project() {
 		super();
@@ -35,6 +36,7 @@ public class Project {
 		this.description = description;
 		this.startDate = startDate;
 		this.endDate = endDate;
+		this.excluded = false;
 	}
 
 	public Project(@Valid CreateProjectDTO projectDTO) {
@@ -43,6 +45,7 @@ public class Project {
 		this.startDate = projectDTO.startDate();
 		this.endDate = projectDTO.endDate();
 		this.createdAt = LocalDateTime.now();
+		this.excluded = false;
 	}
 
 	public Long getId() {
@@ -69,6 +72,10 @@ public class Project {
 		return createdAt;
 	}
 
+	public boolean isExcluded() {
+		return excluded;
+	}
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(id);
@@ -84,6 +91,11 @@ public class Project {
 			return false;
 		Project other = (Project) obj;
 		return Objects.equals(id, other.id);
+	}
+
+	public void logicallyDelete() {
+		this.excluded = true;
+
 	}
 
 }

@@ -4,20 +4,26 @@ import java.net.URI;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.service.annotation.DeleteExchange;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.renato.agileflow.controllers.dto.CreateProjectDTO;
 import com.renato.agileflow.controllers.dto.ReadProjectDTO;
 import com.renato.agileflow.domain.Project;
 import com.renato.agileflow.repositories.ProjectRepository;
+import com.renato.taskflow.controller.lista.LerLista;
 
 import jakarta.validation.Valid;
 
@@ -27,21 +33,45 @@ public class ProjectController {
 
 	@Autowired
 	ProjectRepository projectRepository;
-	
+
 	@PostMapping
 	@Transactional
-	public ResponseEntity<?> postProject(@RequestBody @Valid CreateProjectDTO projectDTO, UriComponentsBuilder uriComponentsBuilder){
+	public ResponseEntity<?> postProject(@RequestBody @Valid CreateProjectDTO projectDTO,
+			UriComponentsBuilder uriComponentsBuilder) {
 		Project project = new Project(projectDTO);
 		projectRepository.save(project);
 		URI uri = uriComponentsBuilder.path("/project/{id}").buildAndExpand(project.getId()).toUri();
 		return ResponseEntity.created(uri).build();
 	}
-	
+
 	@GetMapping("/{id}")
-	public ResponseEntity<?> getProject(@PathVariable Long id){
+	public ResponseEntity<?> getProject(@PathVariable Long id) {
 		Optional<Project> optionalProject = projectRepository.findById(id);
-		if(optionalProject.isPresent()) {
+		if (optionalProject.isPresent()) {
 			return ResponseEntity.ok(new ReadProjectDTO(optionalProject.get()));
+		}
+		return ResponseEntity.notFound().build();
+	}
+
+	@GetMapping
+	public Page<ReadProjectDTO> getAllProjects(@PageableDefault(size = 10) Pageable pageable) {
+		return projectRepository.findAllByExcludedFalse(pageable).map(ReadProjectDTO::new);
+	}
+
+	@DeleteMapping("/{id}")
+	@Transactional
+	public ResponseEntity<?> deleteProject(@PathVariable Long id) {
+		// aqui é necessário consultar se o projeto tem outras entidades associadas, mas
+		// por enquanto, vou permitir excluir
+		Optional<Project> optionalProject = projectRepository.findById(id);
+		if (optionalProject.isPresent()) {
+
+			Project referenceById = projectRepository.getReferenceById(id);
+			if (referenceById.isExcluded()) {
+				return ResponseEntity.notFound().build();
+			}
+			referenceById.logicallyDelete();
+			return ResponseEntity.noContent().build();
 		}
 		return ResponseEntity.notFound().build();
 	}
