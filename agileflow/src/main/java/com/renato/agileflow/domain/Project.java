@@ -56,6 +56,10 @@ public class Project {
 		this.excluded = false;
 	}
 
+	public Project(Long project) {
+		this.id = project;
+	}
+
 	public Long getId() {
 		return id;
 	}

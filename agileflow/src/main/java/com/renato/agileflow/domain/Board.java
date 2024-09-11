@@ -3,6 +3,8 @@ package com.renato.agileflow.domain;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+import com.renato.agileflow.controllers.dto.CreateBoardDTO;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -44,6 +46,15 @@ public class Board {
 		this.label = label;
 		this.priority = priority;
 		this.backgroundColor = backgroundColor;
+	}
+
+	public Board(CreateBoardDTO createBoardDTO) {
+		this.backgroundColor = createBoardDTO.backgroundColor();
+		this.description = createBoardDTO.description();
+		this.label = createBoardDTO.label();
+		this.name = createBoardDTO.name();
+		this.project = new Project(createBoardDTO.project());
+		this.createdAt = LocalDateTime.now();
 	}
 
 	public Long getId() {
