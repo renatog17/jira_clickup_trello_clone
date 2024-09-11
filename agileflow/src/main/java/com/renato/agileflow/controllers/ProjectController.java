@@ -13,17 +13,17 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.service.annotation.DeleteExchange;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.renato.agileflow.controllers.dto.CreateProjectDTO;
 import com.renato.agileflow.controllers.dto.ReadProjectDTO;
+import com.renato.agileflow.controllers.dto.UpdateProjectDTO;
 import com.renato.agileflow.domain.Project;
 import com.renato.agileflow.repositories.ProjectRepository;
-import com.renato.taskflow.controller.lista.LerLista;
 
 import jakarta.validation.Valid;
 
@@ -72,6 +72,22 @@ public class ProjectController {
 			}
 			referenceById.logicallyDelete();
 			return ResponseEntity.noContent().build();
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
+	//necessita ser testado
+	@PutMapping("/{id}")
+	@Transactional
+	public ResponseEntity<?> updateProject(@PathVariable Long id, @RequestBody UpdateProjectDTO updateProjectDTO){
+		Optional<Project> optionalProject = projectRepository.findById(id);
+		System.out.println(optionalProject.get().getId()+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+		if (optionalProject.isPresent()) {
+			Project project = optionalProject.get();
+			if(!project.isExcluded()) {
+				project.update(updateProjectDTO);
+				return ResponseEntity.ok().build();
+			}
 		}
 		return ResponseEntity.notFound().build();
 	}

@@ -4,7 +4,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import com.renato.agileflow.controllers.dto.CreateProjectDTO;
+import com.renato.agileflow.controllers.dto.UpdateProjectDTO;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -95,6 +98,12 @@ public class Project {
 
 	public void logicallyDelete() {
 		this.excluded = true;
+
+	}
+
+	@Transactional
+	public void update(UpdateProjectDTO updateProjectDTO) {
+		this.description = updateProjectDTO.description();
 
 	}
 
