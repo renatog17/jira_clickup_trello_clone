@@ -88,6 +88,10 @@ public class Project {
 		return excluded;
 	}
 
+	public List<Board> getBoards() {
+		return boards;
+	}
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(id);
@@ -105,6 +109,13 @@ public class Project {
 		return Objects.equals(id, other.id);
 	}
 
+	@Override
+	public String toString() {
+		return "Project [id=" + id + ", name=" + name + ", description=" + description + ", startDate=" + startDate
+				+ ", endDate=" + endDate + ", createdAt=" + createdAt + ", boards=" + boards + ", excluded=" + excluded
+				+ "]";
+	}
+
 	public void logicallyDelete() {
 		this.excluded = true;
 
@@ -113,7 +124,6 @@ public class Project {
 	@Transactional
 	public void update(UpdateProjectDTO updateProjectDTO) {
 		this.description = updateProjectDTO.description();
-
 	}
 
 }

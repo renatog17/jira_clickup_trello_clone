@@ -21,6 +21,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.renato.agileflow.controllers.dto.CreateProjectDTO;
 import com.renato.agileflow.controllers.dto.ReadProjectDTO;
+import com.renato.agileflow.controllers.dto.ReadProjectWithBoardsDTO;
 import com.renato.agileflow.controllers.dto.UpdateProjectDTO;
 import com.renato.agileflow.domain.Project;
 import com.renato.agileflow.repositories.ProjectRepository;
@@ -58,6 +59,17 @@ public class ProjectController {
 		return projectRepository.findAllByExcludedFalse(pageable).map(ReadProjectDTO::new);
 	}
 
+	//estou implementando aqui
+	@GetMapping("/{id}/boards")
+	public ResponseEntity<?> getProjectWithBoards(@PathVariable Long id){
+		Optional<Project> optionalProject = projectRepository.findById(id);
+		if(optionalProject.isEmpty())
+			return ResponseEntity.notFound().build();
+		Project projeto = optionalProject.get();
+		ReadProjectWithBoardsDTO readProjectWithBoardsDTO = new ReadProjectWithBoardsDTO(projeto);
+		return ResponseEntity.ok(readProjectWithBoardsDTO);
+	}
+	
 	@DeleteMapping("/{id}")
 	@Transactional
 	public ResponseEntity<?> deleteProject(@PathVariable Long id) {
