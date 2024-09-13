@@ -1,6 +1,7 @@
 package com.renato.agileflow.domain;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 import com.renato.agileflow.controllers.dto.CreateBoardDTO;
@@ -12,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class Board {
@@ -30,6 +32,8 @@ public class Board {
 	private String label;
 	private String priority;
 	private String backgroundColor;
+	@OneToMany(mappedBy = "board")
+	private List<Task> tasks;
 
 	public Board() {
 		super();

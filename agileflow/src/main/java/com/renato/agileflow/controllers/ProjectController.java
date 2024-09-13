@@ -59,7 +59,6 @@ public class ProjectController {
 		return projectRepository.findAllByExcludedFalse(pageable).map(ReadProjectDTO::new);
 	}
 
-	//estou implementando aqui
 	@GetMapping("/{id}/boards")
 	public ResponseEntity<?> getProjectWithBoards(@PathVariable Long id){
 		Optional<Project> optionalProject = projectRepository.findById(id);
