@@ -3,6 +3,8 @@ package com.renato.agileflow.domain;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+import com.renato.agileflow.controllers.dto.CreateTaskDTO;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -29,22 +31,22 @@ public class Task {
 //    private List<Comment> comments;   // Lista de comentários na tarefa
 //    private List<Attachment> attachments; // Lista de anexos relacionados à tarefa
 //    private List<Checklist> checklists;
-	public Task() {
-		super();
-		// TODO Auto-generated constructor stub
+	public Task(CreateTaskDTO createTaskDto) {
+		this(createTaskDto.title(), createTaskDto.description(), createTaskDto.dueDate(), new Board(createTaskDto.board()));
 	}
 
-	public Task(String title, String description, LocalDateTime createdAt, LocalDateTime updatedAt,
+	public Task(String title, String description,
 			LocalDateTime dueDate, Board board) {
 		super();
 		this.title = title;
 		this.description = description;
-		this.createdAt = createdAt;
-		this.updatedAt = updatedAt;
+		this.createdAt = LocalDateTime.now();
+		this.updatedAt = LocalDateTime.now();
 		this.dueDate = dueDate;
 		this.board = board;
 	}
 
+	
 	public Long getId() {
 		return id;
 	}

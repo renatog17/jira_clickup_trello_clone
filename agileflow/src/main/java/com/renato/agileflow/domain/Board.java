@@ -61,6 +61,10 @@ public class Board {
 		this.createdAt = LocalDateTime.now();
 	}
 
+	public Board(Long board) {
+		this.id = board;
+	}
+
 	public Long getId() {
 		return id;
 	}
