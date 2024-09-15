@@ -1,6 +1,7 @@
 package com.renato.agileflow.domain;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 import com.renato.agileflow.controllers.dto.CreateTaskDTO;
@@ -11,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class Task {
@@ -26,9 +28,10 @@ public class Task {
 	@ManyToOne
 	@JoinColumn(name = "board_id")
 	private Board board;
+	@OneToMany(mappedBy = "task")
+	private List<Comment> comments;   // Lista de comentários na tarefa
 
 //	private List<Label> labels;       // Lista de labels associadas à tarefa
-//    private List<Comment> comments;   // Lista de comentários na tarefa
 //    private List<Attachment> attachments; // Lista de anexos relacionados à tarefa
 //    private List<Checklist> checklists;
 	public Task(CreateTaskDTO createTaskDto) {
