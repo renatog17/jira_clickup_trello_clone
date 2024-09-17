@@ -1,6 +1,7 @@
 package com.renato.agileflow.controllers;
 import java.time.LocalDate;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -32,6 +33,11 @@ public class ProjectControllerTest {
 	
 	@Autowired
 	private ProjectRepository projectRepository;
+	
+	@AfterEach
+	public void cleanDatabase() {
+		projectRepository.deleteAll();
+	}
 	
 	@Test
 	public void testPostProject() throws Exception {
@@ -87,14 +93,41 @@ public class ProjectControllerTest {
 	public void testGetProject() throws Exception {
 		Project project = new Project("Teste Get", "Descrição teste get", LocalDate.now(), null);
 		project = projectRepository.save(project);
-		System.out.println(project.getId()+"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-		//Antes eu preciso inserir um objeto no banco de dados, pegar o id desse objeto e passa como path variable
-		//na url
+		//Agora eu preciso testar o corpo de retorno
 		//Act & Assert
 		mockMvc.perform(MockMvcRequestBuilders.get("/project/"+project.getId()))
 			.andExpect(MockMvcResultMatchers.status().isOk());
 		
 		mockMvc.perform(MockMvcRequestBuilders.get("/project/9999"))
 		.andExpect(MockMvcResultMatchers.status().isNotFound());
+	}
+	
+	@Test
+	public void testGetAllProjects() throws Exception {
+		Project project = new Project("Project 1", "Descrição teste get", LocalDate.now(), null);
+		Project project2 = new Project("Project 2", "Descrição teste get", LocalDate.now(), null);
+		Project project3 = new Project("Teste Get", "Descrição teste get", LocalDate.now(), null);
+		Project project4 = new Project("Teste Get", "Descrição teste get", LocalDate.now(), null);
+		
+		projectRepository.save(project);
+		projectRepository.save(project2);
+		projectRepository.save(project3);
+		projectRepository.save(project4);
+		
+		//Act & Assert
+		mockMvc.perform(MockMvcRequestBuilders.get("/project")) 
+//		.param("page", "0")
+//        .param("size", "10"))// Tamanho 2 por página
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.content[0].name").value("Project 1"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.content[1].name").value("Project 2"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.totalElements").value(4));  // No total são 3 projetos
+//				.andExpect(MockMvcResultMatchers.jsonPath("$.totalPages").value(2))  // 2 páginas no total
+//    .andExpect(jsonPath("$.size").value(2));
+	}
+	
+	@Test
+	public void testGetProjectWithBoards() {
+		
 	}
 }
