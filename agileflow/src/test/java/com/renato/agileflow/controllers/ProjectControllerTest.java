@@ -91,12 +91,16 @@ public class ProjectControllerTest {
 	
 	@Test
 	public void testGetProject() throws Exception {
-		Project project = new Project("Teste Get", "Descrição teste get", LocalDate.now(), null);
+		LocalDate now = LocalDate.now();
+		Project project = new Project("Pará Bahia e Brasil", "Descrição 123teste get", now, null);
 		project = projectRepository.save(project);
 		//Agora eu preciso testar o corpo de retorno
 		//Act & Assert
 		mockMvc.perform(MockMvcRequestBuilders.get("/project/"+project.getId()))
-			.andExpect(MockMvcResultMatchers.status().isOk());
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Pará Bahia e Brasil"))
+			.andExpect(MockMvcResultMatchers.jsonPath("$.descricao").value("Descrição 123teste get"))
+			.andExpect(MockMvcResultMatchers.jsonPath("$.startDate").value(now.toString()));
 		
 		mockMvc.perform(MockMvcRequestBuilders.get("/project/9999"))
 		.andExpect(MockMvcResultMatchers.status().isNotFound());
