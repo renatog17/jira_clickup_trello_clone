@@ -1,26 +1,33 @@
 package com.renato.agileflow.controllers;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Arrays;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.renato.agileflow.controllers.dto.CreateProjectDTO;
+import com.renato.agileflow.domain.Board;
 import com.renato.agileflow.domain.Project;
+import com.renato.agileflow.repositories.BoardRepository;
 import com.renato.agileflow.repositories.ProjectRepository;
 
 @AutoConfigureMockMvc
 @SpringBootTest
 @ActiveProfiles("test")
+@Transactional
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class ProjectControllerTest {
 //O banco não está sendo meio que resetado, ou seja, o id não começa do zero e eu ainda estou 
 //	pensando em uma maneira de fazer isso
@@ -33,11 +40,9 @@ public class ProjectControllerTest {
 	
 	@Autowired
 	private ProjectRepository projectRepository;
+	@Autowired
+	private BoardRepository boardRepository;
 	
-	@AfterEach
-	public void cleanDatabase() {
-		projectRepository.deleteAll();
-	}
 	
 	@Test
 	public void testPostProject() throws Exception {
@@ -131,7 +136,25 @@ public class ProjectControllerTest {
 	}
 	
 	@Test
-	public void testGetProjectWithBoards() {
+	public void testGetProjectWithBoards() throws Exception {
+		LocalDateTime now = LocalDateTime.now();
+		Project project = new Project("Projeto com boards", "null", LocalDate.now(), null);
+		Board board = new Board(project, "Board 11111", "Descricao board1", now, "label", "priority", "cor");
+		Board board1 = new Board(project, "Board 2", "Descricao board2", now, "label", "priority", "cor");
+		project.setBoards(Arrays.asList(board, board1));
 		
+		//entity maneger ou o jpa exigiu que fosse adicionado um método setBoards
+		projectRepository.save(project);
+		boardRepository.save(board);
+		boardRepository.save(board1);
+		//Act & Assert
+		mockMvc.perform(MockMvcRequestBuilders.get("/project/1/boards"))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Projeto com boards"))
+			.andExpect(MockMvcResultMatchers.jsonPath("$.boards").isArray())
+	        .andExpect(MockMvcResultMatchers.jsonPath("$.boards.length()").value(2))
+	        //verificar se a a ordem em que foram inseridos os boards é a mesma em que serão buscados
+	        .andExpect(MockMvcResultMatchers.jsonPath("$.boards[0].name").value("Board 11111"))
+	        .andExpect(MockMvcResultMatchers.jsonPath("$.boards[1].name").value("Board 2"));
 	}
 }

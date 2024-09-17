@@ -2,6 +2,7 @@ package com.renato.agileflow.domain;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -14,7 +15,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.Valid;
 
@@ -30,7 +30,11 @@ public class Project {
 	private LocalDate endDate;
 	private LocalDateTime createdAt;
 	@OneToMany(mappedBy = "project")
-	private List<Board> boards;
+	private List<Board> boards = new ArrayList<>();;
+	public void setBoards(List<Board> boards) {
+		this.boards = boards;
+	}
+
 	private boolean excluded;
 
 	public Project() {

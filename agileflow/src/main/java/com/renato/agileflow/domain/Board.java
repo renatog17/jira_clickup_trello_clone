@@ -22,7 +22,7 @@ public class Board {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	@ManyToOne
-	@JoinColumn(name = "project_id", nullable = false)
+	@JoinColumn(name = "project_id")
 	private Project project;
 	private String name;
 	private String description;
