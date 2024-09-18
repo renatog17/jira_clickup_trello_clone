@@ -31,6 +31,11 @@ public class Project {
 	private LocalDateTime createdAt;
 	@OneToMany(mappedBy = "project")
 	private List<Board> boards = new ArrayList<>();;
+
+	public void setExcluded(boolean excluded) {
+		this.excluded = excluded;
+	}
+
 	public void setBoards(List<Board> boards) {
 		this.boards = boards;
 	}

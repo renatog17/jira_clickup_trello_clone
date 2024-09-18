@@ -92,7 +92,6 @@ public class ProjectController {
 	@Transactional
 	public ResponseEntity<?> updateProject(@PathVariable Long id, @RequestBody UpdateProjectDTO updateProjectDTO){
 		Optional<Project> optionalProject = projectRepository.findById(id);
-		System.out.println(optionalProject.get().getId()+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 		if (optionalProject.isPresent()) {
 			Project project = optionalProject.get();
 			if(!project.isExcluded()) {

@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.renato.agileflow.controllers.dto.CreateProjectDTO;
+import com.renato.agileflow.controllers.dto.UpdateProjectDTO;
 import com.renato.agileflow.domain.Board;
 import com.renato.agileflow.domain.Project;
 import com.renato.agileflow.repositories.BoardRepository;
@@ -156,5 +157,41 @@ public class ProjectControllerTest {
 	        //verificar se a a ordem em que foram inseridos os boards é a mesma em que serão buscados
 	        .andExpect(MockMvcResultMatchers.jsonPath("$.boards[0].name").value("Board 11111"))
 	        .andExpect(MockMvcResultMatchers.jsonPath("$.boards[1].name").value("Board 2"));
+	}
+	
+	@Test
+	public void testDeleteProject() throws Exception {
+		Project project = new Project("Projeto a ser deletado", "Descrição do projeto que vai ser deletado", LocalDate.now(), null);
+		project = projectRepository.save(project);
+		//Act & Assert
+		mockMvc.perform(MockMvcRequestBuilders.delete("/project/"+project.getId()))
+		.andExpect(MockMvcResultMatchers.status().isNoContent());
+		
+		Project project2 = new Project("Projeto a ser deletado", "Descrição do projeto que vai ser deletado", LocalDate.now(), null);
+		project2.setExcluded(true);
+		project2 = projectRepository.save(project2);
+		mockMvc.perform(MockMvcRequestBuilders.delete("/project/"+project2.getId()))
+		.andExpect(MockMvcResultMatchers.status().isNotFound());
+		
+		mockMvc.perform(MockMvcRequestBuilders.delete("/project/9999"))
+		.andExpect(MockMvcResultMatchers.status().isNotFound());
+	}
+	
+	@Test
+	public void testUpdateProject() throws Exception{
+		Project project = new Project("atualizar", "atualizar", LocalDate.now(), null);
+		project = projectRepository.save(project);
+		
+		UpdateProjectDTO updateProjectDTO = new UpdateProjectDTO("descricao atualizada");
+		//Act & Assert
+		mockMvc.perform(MockMvcRequestBuilders.put("/project/"+project.getId())
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(updateProjectDTO)))
+		.andExpect(MockMvcResultMatchers.status().isOk());
+		
+		mockMvc.perform(MockMvcRequestBuilders.put("/project/9")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(updateProjectDTO)))
+		.andExpect(MockMvcResultMatchers.status().isNotFound());
 	}
 }
