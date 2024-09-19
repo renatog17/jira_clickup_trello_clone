@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -72,14 +73,15 @@ public class ProjectController {
 	@DeleteMapping("/{id}")
 	@Transactional
 	public ResponseEntity<?> deleteProject(@PathVariable Long id) {
-		// aqui é necessário consultar se o projeto tem outras entidades associadas, mas
-		// por enquanto, vou permitir excluir
 		Optional<Project> optionalProject = projectRepository.findById(id);
 		if (optionalProject.isPresent()) {
 
 			Project referenceById = projectRepository.getReferenceById(id);
 			if (referenceById.isExcluded()) {
 				return ResponseEntity.notFound().build();
+			}
+			if(referenceById.getBoards().size()>0) {
+				return ResponseEntity.status(HttpStatusCode.valueOf(409)).build();
 			}
 			referenceById.logicallyDelete();
 			return ResponseEntity.noContent().build();
