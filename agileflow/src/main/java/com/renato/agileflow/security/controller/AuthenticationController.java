@@ -5,11 +5,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.renato.agileflow.domain.Usuario;
+import com.renato.agileflow.repositories.UsuarioRepository;
 import com.renato.agileflow.security.controller.dto.AuthenticationDTO;
 import com.renato.agileflow.security.controller.dto.LoginResponseDTO;
 import com.renato.agileflow.security.controller.dto.RegisterDTO;
@@ -26,6 +29,8 @@ public class AuthenticationController {
 	@Autowired
 	private UserRepository userRepository;
 	@Autowired
+	private UsuarioRepository usuarioRepository;
+	@Autowired
 	private TokenService tokenService;
 	
 	@PostMapping("/login")
@@ -36,14 +41,20 @@ public class AuthenticationController {
 		return ResponseEntity.ok(new LoginResponseDTO(token));
 	}
 	
+	//agora eu tenho que salvar o nome e cpf na tabela de usuario
 	@PostMapping("/register")
+	@Transactional
 	public ResponseEntity register(@RequestBody RegisterDTO data) {
 		if(this.userRepository.findByLogin(data.login()) != null)
 			return ResponseEntity.badRequest().build();
 		String encryptedPassword = new BCryptPasswordEncoder().encode(data.password());
 		User newUser = new User(data.login(), encryptedPassword, data.role());
-		
+
+		Usuario usuario = new Usuario(data.name(), data.endereco(), newUser);
 		this.userRepository.save(newUser);
+		newUser.setUsuario(usuario);
+		
+		this.usuarioRepository.save(usuario);
 		
 		return ResponseEntity.ok().build();
 	}

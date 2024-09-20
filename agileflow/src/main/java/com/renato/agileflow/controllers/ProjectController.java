@@ -42,6 +42,7 @@ public class ProjectController {
 			UriComponentsBuilder uriComponentsBuilder) {
 		Project project = new Project(projectDTO);
 		projectRepository.save(project);
+		//corrigir a parte do usuario, tem que pegar o id do usuario
 		URI uri = uriComponentsBuilder.path("/project/{id}").buildAndExpand(project.getId()).toUri();
 		return ResponseEntity.created(uri).build();
 	}
@@ -89,7 +90,6 @@ public class ProjectController {
 		return ResponseEntity.notFound().build();
 	}
 	
-	//necessita ser testado
 	@PutMapping("/{id}")
 	@Transactional
 	public ResponseEntity<?> updateProject(@PathVariable Long id, @RequestBody UpdateProjectDTO updateProjectDTO){

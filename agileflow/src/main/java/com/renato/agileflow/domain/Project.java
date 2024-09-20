@@ -10,11 +10,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.renato.agileflow.controllers.dto.CreateProjectDTO;
 import com.renato.agileflow.controllers.dto.UpdateProjectDTO;
+import com.renato.agileflow.security.domain.User;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.Valid;
 
@@ -29,8 +32,11 @@ public class Project {
 	private LocalDate startDate;
 	private LocalDate endDate;
 	private LocalDateTime createdAt;
+	@ManyToOne
+	@JoinColumn(name="created_by", nullable = false)
+	private Usuario createdBy;
 	@OneToMany(mappedBy = "project")
-	private List<Board> boards = new ArrayList<>();;
+	private List<Board> boards = new ArrayList<>();
 
 	public void setExcluded(boolean excluded) {
 		this.excluded = excluded;
