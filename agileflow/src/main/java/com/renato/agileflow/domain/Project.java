@@ -33,7 +33,7 @@ public class Project {
 	private LocalDate endDate;
 	private LocalDateTime createdAt;
 	@ManyToOne
-	@JoinColumn(name="created_by", nullable = false)
+	@JoinColumn(name = "created_by", nullable = false)
 	private Usuario createdBy;
 	@OneToMany(mappedBy = "project")
 	private List<Board> boards = new ArrayList<>();
@@ -109,6 +109,10 @@ public class Project {
 
 	public List<Board> getBoards() {
 		return boards;
+	}
+
+	public void setCreatedBy(Usuario createdBy) {
+		this.createdBy = createdBy;
 	}
 
 	@Override

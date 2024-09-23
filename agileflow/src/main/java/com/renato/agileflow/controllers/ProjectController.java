@@ -9,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,7 +27,11 @@ import com.renato.agileflow.controllers.dto.ReadProjectDTO;
 import com.renato.agileflow.controllers.dto.ReadProjectWithBoardsDTO;
 import com.renato.agileflow.controllers.dto.UpdateProjectDTO;
 import com.renato.agileflow.domain.Project;
+import com.renato.agileflow.domain.Usuario;
 import com.renato.agileflow.repositories.ProjectRepository;
+import com.renato.agileflow.repositories.UsuarioRepository;
+import com.renato.agileflow.security.domain.User;
+import com.renato.agileflow.security.repository.UserRepository;
 
 import jakarta.validation.Valid;
 
@@ -35,12 +41,21 @@ public class ProjectController {
 
 	@Autowired
 	ProjectRepository projectRepository;
-
+	@Autowired 
+	UserRepository userRepository;
+	@Autowired
+	UsuarioRepository usuarioRepository;
+	
 	@PostMapping
 	@Transactional
 	public ResponseEntity<?> postProject(@RequestBody @Valid CreateProjectDTO projectDTO,
 			UriComponentsBuilder uriComponentsBuilder) {
 		Project project = new Project(projectDTO);
+		
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	    User user = (User) userRepository.findByLogin(authentication.getName());
+	    Usuario usuario = usuarioRepository.findByUser(user);
+		project.setCreatedBy(usuario);
 		projectRepository.save(project);
 		//corrigir a parte do usuario, tem que pegar o id do usuario
 		URI uri = uriComponentsBuilder.path("/project/{id}").buildAndExpand(project.getId()).toUri();
