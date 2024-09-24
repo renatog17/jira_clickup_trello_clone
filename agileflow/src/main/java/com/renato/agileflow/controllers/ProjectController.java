@@ -29,9 +29,8 @@ import com.renato.agileflow.controllers.dto.UpdateProjectDTO;
 import com.renato.agileflow.domain.Project;
 import com.renato.agileflow.domain.Usuario;
 import com.renato.agileflow.repositories.ProjectRepository;
-import com.renato.agileflow.repositories.UsuarioRepository;
 import com.renato.agileflow.security.domain.User;
-import com.renato.agileflow.security.repository.UserRepository;
+import com.renato.agileflow.services.UsuarioService;
 
 import jakarta.validation.Valid;
 
@@ -41,23 +40,18 @@ public class ProjectController {
 
 	@Autowired
 	ProjectRepository projectRepository;
-	@Autowired 
-	UserRepository userRepository;
 	@Autowired
-	UsuarioRepository usuarioRepository;
+	UsuarioService usuarioService;
 	
 	@PostMapping
 	@Transactional
 	public ResponseEntity<?> postProject(@RequestBody @Valid CreateProjectDTO projectDTO,
 			UriComponentsBuilder uriComponentsBuilder) {
 		Project project = new Project(projectDTO);
-		
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-	    User user = (User) userRepository.findByLogin(authentication.getName());
-	    Usuario usuario = usuarioRepository.findByUser(user);
+	  
+		Usuario usuario = usuarioService.obterUsuarioAutenticado();
 		project.setCreatedBy(usuario);
 		projectRepository.save(project);
-		//corrigir a parte do usuario, tem que pegar o id do usuario
 		URI uri = uriComponentsBuilder.path("/project/{id}").buildAndExpand(project.getId()).toUri();
 		return ResponseEntity.created(uri).build();
 	}
