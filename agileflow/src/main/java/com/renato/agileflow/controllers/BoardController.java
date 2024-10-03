@@ -24,8 +24,11 @@ import com.renato.agileflow.domain.Project;
 import com.renato.agileflow.repositories.BoardRepository;
 import com.renato.agileflow.repositories.ProjectRepository;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 @RequestMapping("/board")
 @RestController
+@SecurityRequirement(name = "bearer-key")
 public class BoardController {
 
 	@Autowired

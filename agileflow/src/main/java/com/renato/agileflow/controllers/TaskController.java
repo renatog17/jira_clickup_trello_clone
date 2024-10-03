@@ -17,8 +17,11 @@ import com.renato.agileflow.controllers.dto.CreateTaskDTO;
 import com.renato.agileflow.domain.Task;
 import com.renato.agileflow.repositories.TaskRepository;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 @RestController
 @RequestMapping("/task")
+@SecurityRequirement(name = "bearer-key")
 public class TaskController {
 
 	@Autowired

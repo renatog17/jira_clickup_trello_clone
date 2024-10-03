@@ -32,6 +32,11 @@ public class Board {
 	private String label;
 	private String priority;
 	private String backgroundColor;
+	
+	@ManyToOne
+	@JoinColumn(name = "created_by", nullable = false)
+	private Usuario createdBy;
+	
 	@OneToMany(mappedBy = "board")
 	private List<Task> tasks;
 

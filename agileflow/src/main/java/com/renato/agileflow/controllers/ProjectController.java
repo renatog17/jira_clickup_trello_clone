@@ -9,8 +9,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,13 +27,14 @@ import com.renato.agileflow.controllers.dto.UpdateProjectDTO;
 import com.renato.agileflow.domain.Project;
 import com.renato.agileflow.domain.Usuario;
 import com.renato.agileflow.repositories.ProjectRepository;
-import com.renato.agileflow.security.domain.User;
 import com.renato.agileflow.services.UsuarioService;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/project")
+@SecurityRequirement(name = "bearer-key")
 public class ProjectController {
 
 	@Autowired

@@ -25,7 +25,11 @@ public class Usuario {
 	private User user;
 	@OneToMany(mappedBy = "createdBy")
 	private List<Project> projects;
-
+	@OneToMany(mappedBy = "createdBy")
+	private List<Board> boards;
+	@OneToMany(mappedBy = "createdBy")
+	private List<Board> tasks;
+	
 	public Usuario() {
 		super();
 		// TODO Auto-generated constructor stub

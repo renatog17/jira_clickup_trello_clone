@@ -26,6 +26,9 @@ public class Task {
 	private LocalDateTime updatedAt;
 	private LocalDateTime dueDate;
 	@ManyToOne
+	@JoinColumn(name = "created_by", nullable = false)
+	private Usuario createdBy;
+	@ManyToOne
 	@JoinColumn(name = "board_id")
 	private Board board;
 	@OneToMany(mappedBy = "task")
