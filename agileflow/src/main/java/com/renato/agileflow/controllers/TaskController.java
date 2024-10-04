@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.renato.agileflow.controllers.dto.CreateTaskDTO;
+import com.renato.agileflow.controllers.dto.UpdateTaskDTO;
 import com.renato.agileflow.domain.Task;
 import com.renato.agileflow.repositories.TaskRepository;
 
@@ -43,7 +44,7 @@ public class TaskController {
 	}
 	
 	@PutMapping
-	public ResponseEntity<?> putTask(){
+	public ResponseEntity<?> putTask(@RequestBody UpdateTaskDTO updateTaskDTO){
 		return null;
 	}
 	
