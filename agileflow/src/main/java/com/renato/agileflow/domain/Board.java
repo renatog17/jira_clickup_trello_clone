@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 import com.renato.agileflow.controllers.dto.CreateBoardDTO;
+import com.renato.agileflow.controllers.dto.UpdateBoardDTO;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -32,7 +33,16 @@ public class Board {
 	private String label;
 	private String priority;
 	private String backgroundColor;
+	private Boolean excluded;
 	
+	public Boolean isExcluded() {
+		return excluded;
+	}
+
+	public void setExcluded(Boolean excluded) {
+		this.excluded = excluded;
+	}
+
 	@ManyToOne
 	@JoinColumn(name = "created_by", nullable = false)
 	private Usuario createdBy;
@@ -55,6 +65,7 @@ public class Board {
 		this.label = label;
 		this.priority = priority;
 		this.backgroundColor = backgroundColor;
+		this.excluded = false;
 	}
 
 	public Board(CreateBoardDTO createBoardDTO) {
@@ -121,6 +132,15 @@ public class Board {
 			return false;
 		Board other = (Board) obj;
 		return Objects.equals(id, other.id);
+	}
+
+	public void update(UpdateBoardDTO updateBoardDTO) {
+		this.name = updateBoardDTO.name();
+		this.description = updateBoardDTO.description();
+		this.label = updateBoardDTO.label();
+		this.priority = updateBoardDTO.priority();
+		this.backgroundColor = updateBoardDTO.backgroundColor();
+		
 	}
 
 }

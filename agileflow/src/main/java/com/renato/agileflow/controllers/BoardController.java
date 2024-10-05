@@ -58,11 +58,21 @@ public class BoardController {
 	}
 	
 	@PutMapping("/{id}")
+	@Transactional
 	public ResponseEntity<?> putBoard(@PathVariable Long id, @RequestBody UpdateBoardDTO updateBoardDTO){
-		return null;
+		Optional<Board> optionalBoard = boardRepository.findById(id);
+		if(optionalBoard.isPresent()) {
+			Board board = optionalBoard.get();
+			if(!board.isExcluded()) {
+				board.update(updateBoardDTO);
+				return ResponseEntity.ok().build();
+			}
+		}
+		return ResponseEntity.notFound().build();
 	}
 	
-	@DeleteMapping("/{id}") ResponseEntity<?> deleteBoad(@PathVariable Long id){
+	@DeleteMapping("/{id}") 
+	public ResponseEntity<?> deleteBoad(@PathVariable Long id){
 		return null;
 	}
 }

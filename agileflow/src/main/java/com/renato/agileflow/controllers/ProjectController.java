@@ -57,7 +57,7 @@ public class ProjectController {
 
 	@GetMapping("/{id}")
 	public ResponseEntity<?> getProject(@PathVariable Long id) {
-		Optional<Project> optionalProject = projectRepository.findById(id);
+		Optional<Project> optionalProject = projectRepository.findByIdAndExcludedFalse(id);
 		if (optionalProject.isPresent()) {
 			return ResponseEntity.ok(new ReadProjectDTO(optionalProject.get()));
 		}

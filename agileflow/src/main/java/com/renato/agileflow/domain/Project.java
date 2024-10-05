@@ -37,6 +37,7 @@ public class Project {
 	private Usuario createdBy;
 	@OneToMany(mappedBy = "project")
 	private List<Board> boards = new ArrayList<>();
+	private boolean excluded;
 
 	public void setExcluded(boolean excluded) {
 		this.excluded = excluded;
@@ -46,7 +47,6 @@ public class Project {
 		this.boards = boards;
 	}
 
-	private boolean excluded;
 
 	public Project() {
 		super();
