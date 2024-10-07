@@ -82,17 +82,18 @@ public class ProjectController {
 	@DeleteMapping("/{id}")
 	@Transactional
 	public ResponseEntity<?> deleteProject(@PathVariable Long id) {
-		Optional<Project> optionalProject = projectRepository.findById(id);
+		Optional<Project> optionalProject = projectRepository.findByIdAndExcludedFalseAndBoardsEmpty(id);
 		if (optionalProject.isPresent()) {
 
-			Project referenceById = projectRepository.getReferenceById(id);
-			if (referenceById.isExcluded()) {
-				return ResponseEntity.notFound().build();
-			}
-			if(referenceById.getBoards().size()>0) {
-				return ResponseEntity.status(HttpStatusCode.valueOf(409)).build();
-			}
-			referenceById.logicallyDelete();
+//			Project referenceById = projectRepository.getReferenceById(id);
+//			if (referenceById.isExcluded()) {
+//				return ResponseEntity.notFound().build();
+//			}
+//			//abaixo é regra de negócio, convém isolar em um service, na verdade, isso pode ser uma query no banco de dados
+//			if(referenceById.getBoards().size()>0) {
+//				return ResponseEntity.status(HttpStatusCode.valueOf(409)).build();
+//			}
+			optionalProject.get().logicallyDelete();
 			return ResponseEntity.noContent().build();
 		}
 		return ResponseEntity.notFound().build();

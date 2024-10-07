@@ -21,8 +21,10 @@ import com.renato.agileflow.controllers.dto.ReadBoardDTO;
 import com.renato.agileflow.controllers.dto.UpdateBoardDTO;
 import com.renato.agileflow.domain.Board;
 import com.renato.agileflow.domain.Project;
+import com.renato.agileflow.domain.Usuario;
 import com.renato.agileflow.repositories.BoardRepository;
 import com.renato.agileflow.repositories.ProjectRepository;
+import com.renato.agileflow.services.UsuarioService;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
@@ -35,6 +37,8 @@ public class BoardController {
 	private ProjectRepository projectRepository;
 	@Autowired 
 	private BoardRepository boardRepository;
+	@Autowired
+	UsuarioService usuarioService;
 	
 	@PostMapping
 	@Transactional
@@ -42,7 +46,11 @@ public class BoardController {
 		Optional<Project> optionalProject = projectRepository.findById(createBoardDTO.project());
 		if(optionalProject.isEmpty())
 			return ResponseEntity.notFound().build();
+		Usuario usuario = usuarioService.obterUsuarioAutenticado();
 		Board board = new Board(createBoardDTO);
+		//a testar
+		board.setCreatedBy(usuario);
+		// a testar
 		boardRepository.save(board);
 		URI uri = uriComponentsBuilder.path("/board/{id}").buildAndExpand(board.getId()).toUri();
 		return ResponseEntity.created(uri).build();
@@ -72,6 +80,7 @@ public class BoardController {
 	}
 	
 	@DeleteMapping("/{id}") 
+	@Transactional
 	public ResponseEntity<?> deleteBoad(@PathVariable Long id){
 		return null;
 	}

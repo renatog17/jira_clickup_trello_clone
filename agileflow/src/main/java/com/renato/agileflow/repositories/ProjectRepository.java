@@ -12,4 +12,5 @@ public interface ProjectRepository extends JpaRepository<Project, Long>{
 
 	Page<Project> findAllByExcludedFalse(Pageable pageable);
 	Optional<Project> findByIdAndExcludedFalse(Long id);
+	Optional<Project> findByIdAndExcludedFalseAndBoardsEmpty(Long id);
 }

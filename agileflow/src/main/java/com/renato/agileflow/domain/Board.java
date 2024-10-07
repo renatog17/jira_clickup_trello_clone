@@ -76,6 +76,15 @@ public class Board {
 		this.project = new Project(createBoardDTO.project());
 		this.createdAt = LocalDateTime.now();
 	}
+	
+
+	public Usuario getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(Usuario createdBy) {
+		this.createdBy = createdBy;
+	}
 
 	public Board(Long board) {
 		this.id = board;
