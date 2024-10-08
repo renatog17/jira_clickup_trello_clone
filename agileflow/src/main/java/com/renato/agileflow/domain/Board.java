@@ -1,6 +1,7 @@
 package com.renato.agileflow.domain;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -34,6 +35,9 @@ public class Board {
 	private String priority;
 	private String backgroundColor;
 	private Boolean excluded;
+	@OneToMany(mappedBy = "board")
+	private List<Task> tasks = new ArrayList<>();
+	
 	
 	public Boolean isExcluded() {
 		return excluded;
@@ -47,8 +51,6 @@ public class Board {
 	@JoinColumn(name = "created_by", nullable = false)
 	private Usuario createdBy;
 	
-	@OneToMany(mappedBy = "board")
-	private List<Task> tasks;
 
 	public Board() {
 		super();
@@ -126,6 +128,11 @@ public class Board {
 		return backgroundColor;
 	}
 
+	
+	public List<Task> getTasks() {
+		return tasks;
+	}
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(id);
@@ -150,6 +157,10 @@ public class Board {
 		this.priority = updateBoardDTO.priority();
 		this.backgroundColor = updateBoardDTO.backgroundColor();
 		
+	}
+
+	public void logicallyDelete() {
+		this.excluded = true;
 	}
 
 }

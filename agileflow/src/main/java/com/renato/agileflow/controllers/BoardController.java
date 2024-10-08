@@ -4,6 +4,9 @@ import java.net.URI;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,6 +21,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.renato.agileflow.controllers.dto.CreateBoardDTO;
 import com.renato.agileflow.controllers.dto.ReadBoardDTO;
+import com.renato.agileflow.controllers.dto.ReadBoardWithTasksDTO;
 import com.renato.agileflow.controllers.dto.UpdateBoardDTO;
 import com.renato.agileflow.domain.Board;
 import com.renato.agileflow.domain.Project;
@@ -48,9 +52,7 @@ public class BoardController {
 			return ResponseEntity.notFound().build();
 		Usuario usuario = usuarioService.obterUsuarioAutenticado();
 		Board board = new Board(createBoardDTO);
-		//a testar
 		board.setCreatedBy(usuario);
-		// a testar
 		boardRepository.save(board);
 		URI uri = uriComponentsBuilder.path("/board/{id}").buildAndExpand(board.getId()).toUri();
 		return ResponseEntity.created(uri).build();
@@ -63,6 +65,21 @@ public class BoardController {
 			return ResponseEntity.notFound().build();
 		ReadBoardDTO readBoardDTO = new ReadBoardDTO(optionalBoard.get());
 		return ResponseEntity.ok(readBoardDTO);
+	}
+	
+	@GetMapping
+	public Page<ReadBoardDTO> getAllBoards(@PageableDefault(size = 10) Pageable pageable){
+		return boardRepository.findAllByExcludedFalse(pageable).map(ReadBoardDTO::new);
+	}
+	
+	@GetMapping("/{id}/tasks")
+	public ResponseEntity<?> getBoardsWithTasks(@PathVariable Long id) {
+		Optional<Board> optionalBoard = boardRepository.findById(id);
+		if(optionalBoard.isEmpty())
+			return ResponseEntity.notFound().build();
+		Board board = optionalBoard.get();
+		ReadBoardWithTasksDTO readProjectWithBoardsDTO = new ReadBoardWithTasksDTO(board);
+		return ResponseEntity.ok(readProjectWithBoardsDTO);
 	}
 	
 	@PutMapping("/{id}")
@@ -82,6 +99,11 @@ public class BoardController {
 	@DeleteMapping("/{id}") 
 	@Transactional
 	public ResponseEntity<?> deleteBoad(@PathVariable Long id){
-		return null;
+		Optional<Board> optionalBoard = boardRepository.findByIdAndExcludedFalseAndBoardsEmpty(id);
+		if (optionalBoard.isPresent()) {
+			optionalBoard.get().logicallyDelete();
+			return ResponseEntity.noContent().build();
+		}
+		return ResponseEntity.notFound().build();
 	}
 }
