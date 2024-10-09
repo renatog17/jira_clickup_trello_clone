@@ -99,7 +99,7 @@ public class BoardController {
 	@DeleteMapping("/{id}") 
 	@Transactional
 	public ResponseEntity<?> deleteBoad(@PathVariable Long id){
-		Optional<Board> optionalBoard = boardRepository.findByIdAndExcludedFalseAndBoardsEmpty(id);
+		Optional<Board> optionalBoard = boardRepository.findByIdAndExcludedFalseAndTasksEmpty(id);
 		if (optionalBoard.isPresent()) {
 			optionalBoard.get().logicallyDelete();
 			return ResponseEntity.noContent().build();

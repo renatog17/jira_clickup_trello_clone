@@ -11,6 +11,6 @@ import com.renato.agileflow.domain.Board;
 public interface BoardRepository extends JpaRepository<Board, Long>{
 
 	Page<Board> findAllByExcludedFalse(Pageable pageable);
-	Optional<Board> findByIdAndExcludedFalseAndBoardsEmpty(Long id);
 	//Page<Project> findAllByExcludedFalse(Pageable pageable);
+	Optional<Board> findByIdAndExcludedFalseAndTasksEmpty(Long id);
 }
